@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TITAN CRYPTO">
+<meta name="theme-color" content="#000000">
+<title>NEXUS TITAN CRYPTO</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:#020205;--deep:#080b14;--panel:#0c1020;--card:#101828;
+  --border:#182038;--cyan:#00d4ff;--cyan-dim:rgba(0,212,255,0.1);
+  --gold:#f5c842;--gold-dim:rgba(245,200,66,0.1);
+  --green:#00ff9d;--green-dim:rgba(0,255,157,0.1);
+  --red:#ff3b5c;--red-dim:rgba(255,59,92,0.1);
+  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.1);
+  --orange:#f97316;--silver:#8899aa;--ghost:#3d4f63;--white:#e8f0fa;
+  --fd:'Orbitron',monospace;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--void);color:var(--white);font-family:var(--fb);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 10% 0%,rgba(245,200,66,0.04) 0%,transparent 55%),
+             radial-gradient(ellipse at 90% 100%,rgba(139,92,246,0.04) 0%,transparent 55%);}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(2,2,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;padding:0 14px;gap:10px;}
+.nav-logo{width:34px;height:34px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:11px;font-weight:900;color:#000;}
+.nav-title{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);}
+.nav-sub{font-size:10px;color:var(--ghost);font-family:var(--fm);letter-spacing:1px;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 5px var(--gold)}50%{opacity:.3;box-shadow:none}}
+.nav-clock{font-family:var(--fm);font-size:11px;color:var(--silver);}
+.fg-pill{font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 8px;border-radius:10px;}
+
+.tabs{position:fixed;top:54px;left:0;right:0;z-index:99;background:rgba(2,2,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 6px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;height:40px;padding:0 14px;display:flex;align-items:center;gap:5px;font-family:var(--fb);font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ghost);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab:hover{color:var(--silver);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.main{margin-top:94px;padding:10px;position:relative;z-index:1;}
+.screen{display:none;}.screen.active{display:block;}
+
+.header-bar{background:linear-gradient(135deg,rgba(245,200,66,0.06),rgba(139,92,246,0.04));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:relative;overflow:hidden;}
+.header-bar::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.hs{text-align:center;}
+.hs-label{font-size:8px;font-weight:600;letter-spacing:1.5px;color:var(--ghost);font-family:var(--fm);text-transform:uppercase;margin-bottom:3px;}
+.hs-val{font-family:var(--fd);font-size:17px;font-weight:700;}
+.hs-val.pos{color:var(--green);}.hs-val.neg{color:var(--red);}.hs-val.cyan{color:var(--cyan);}.hs-val.gold{color:var(--gold);}
+
+/* Fear & Greed Gauge */
+.fg-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
+.fg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.fg-title{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--silver);}
+.fg-index{font-family:var(--fd);font-size:36px;font-weight:900;}
+.fg-label{font-size:12px;font-weight:600;letter-spacing:1px;font-family:var(--fm);}
+.fg-bar-wrap{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin:8px 0;}
+.fg-bar{height:100%;border-radius:5px;transition:width .8s,background .8s;}
+.fg-zones{display:flex;justify-content:space-between;font-size:8px;color:var(--ghost);font-family:var(--fm);}
+
+/* Funding rates */
+.funding-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px;}
+.funding-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.funding-coin{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
+.funding-rate{font-family:var(--fm);font-size:15px;font-weight:700;}
+.funding-signal{font-size:9px;font-family:var(--fm);margin-top:2px;}
+
+/* Position cards */
+.pos-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
+.pos-card.long{border-left:3px solid var(--green);}
+.pos-card.short{border-left:3px solid var(--red);}
+.pos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pos-ticker{font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1px;}
+.pos-ticker.long{color:var(--green);}.pos-ticker.short{color:var(--red);}
+.pos-type{font-family:var(--fm);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.pos-type.LONG{background:var(--green-dim);color:var(--green);}
+.pos-type.SHORT{background:var(--red-dim);color:var(--red);}
+.pos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px;}
+.ps{background:rgba(0,0,0,.3);border-radius:5px;padding:5px;text-align:center;}
+.ps-label{font-size:8px;color:var(--ghost);font-family:var(--fm);letter-spacing:1px;margin-bottom:2px;}
+.ps-val{font-family:var(--fm);font-size:11px;font-weight:600;}
+.stage-dots{display:flex;gap:4px;margin-bottom:6px;}
+.stage-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.stage-dot.filled{background:var(--gold);}
+.heat-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;}
+.heat-fill{height:100%;border-radius:1px;transition:width .5s;}
+.pos-actions{display:flex;gap:6px;margin-top:8px;}
+.btn-close{background:var(--red-dim);border:1px solid var(--red);color:var(--red);border-radius:5px;padding:4px 12px;font-family:var(--fb);font-size:11px;font-weight:600;cursor:pointer;}
+
+/* AI Pipeline */
+.pipeline-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
+.pipeline-title{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);margin-bottom:10px;}
+.ai-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(24,32,56,.5);}
+.ai-row:last-child{border-bottom:none;}
+.ai-name{font-family:var(--fm);font-size:10px;font-weight:700;color:var(--silver);width:90px;flex-shrink:0;}
+.ai-verdict{font-size:9px;font-weight:700;letter-spacing:1px;padding:1px 7px;border-radius:3px;font-family:var(--fm);flex-shrink:0;}
+.ai-verdict.YES{background:var(--green-dim);color:var(--green);}
+.ai-verdict.NO{background:var(--red-dim);color:var(--red);}
+.ai-conf{font-family:var(--fm);font-size:10px;color:var(--ghost);width:35px;flex-shrink:0;}
+.ai-reason{font-size:10px;color:var(--silver);flex:1;line-height:1.3;}
+
+/* DeFi yields */
+.yield-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.yield-proto{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--purple);width:80px;flex-shrink:0;}
+.yield-sym{font-size:11px;color:var(--silver);flex:1;}
+.yield-apy{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--gold);}
+.yield-tvl{font-size:9px;color:var(--ghost);font-family:var(--fm);}
+
+/* Trade history */
+.trade-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--card);border:1px solid var(--border);border-radius:7px;margin-bottom:5px;}
+.tr-sym{font-family:var(--fm);font-size:11px;font-weight:700;width:70px;}
+.tr-type{font-size:9px;font-family:var(--fm);width:40px;}
+.tr-pnl{font-family:var(--fm);font-size:12px;font-weight:700;width:70px;text-align:right;}
+.tr-pnl.pos{color:var(--green);}.tr-pnl.neg{color:var(--red);}
+.tr-sig{font-size:9px;color:var(--ghost);flex:1;}
+.tr-time{font-family:var(--fm);font-size:9px;color:var(--ghost);}
+
+.section-h{display:flex;align-items:center;gap:7px;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.section-icon{font-size:13px;}
+.section-title{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--silver);text-transform:uppercase;flex:1;}
+.section-badge{font-family:var(--fm);font-size:9px;padding:1px 6px;background:var(--gold-dim);color:var(--gold);border-radius:3px;}
+
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.btn{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:10px;color:var(--silver);font-family:var(--fb);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.cand-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;}
+.cand-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.cand-sym{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gold);}
+.cand-dir{font-size:9px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-family:var(--fm);}
+.cand-dir.LONG{background:var(--green-dim);color:var(--green);}
+.cand-dir.SHORT{background:var(--red-dim);color:var(--red);}
+.score-bar{height:3px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden;}
+.score-fill{height:100%;border-radius:2px;background:var(--gold);}
+
+.market-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
+.market-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(24,32,56,.4);}
+.market-row:last-child{border-bottom:none;}
+.market-label{font-size:11px;color:var(--silver);font-family:var(--fm);}
+.market-value{font-family:var(--fm);font-size:12px;font-weight:700;}
+
+.rotation-item{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:4px;}
+.ri-icon{font-size:12px;width:20px;}
+.ri-ticker{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--gold);width:70px;}
+.ri-reason{font-size:11px;color:var(--silver);flex:1;}
+.ri-time{font-family:var(--fm);font-size:9px;color:var(--ghost);}
+
+.loading{text-align:center;padding:30px 20px;color:var(--ghost);font-family:var(--fm);font-size:11px;letter-spacing:1px;}
+.loading::before{content:'';display:block;width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;margin:0 auto 10px;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:24px 16px;color:var(--ghost);font-size:12px;line-height:1.6;}
+.empty-icon{font-size:28px;margin-bottom:6px;}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:var(--void);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo">TC</div>
+  <div>
+    <div class="nav-title">TITAN CRYPTO</div>
+    <div class="nav-sub">CRYPTO SPECIALIST — 24/7 — 6-AI ADVERSARIAL</div>
+  </div>
+  <div class="nav-right">
+    <div class="fg-pill" id="fgPill">F&G —</div>
+    <div class="pulse-dot" id="pulseDot"></div>
+    <div class="nav-clock" id="clock">--:--:--</div>
+  </div>
+</nav>
+<div class="tabs">
+  <div class="tab active" onclick="show('positions')" id="t-positions">💼 POSITIONS</div>
+  <div class="tab" onclick="show('market')" id="t-market">😱 MARKET</div>
+  <div class="tab" onclick="show('pipeline')" id="t-pipeline">🔱 6-AI</div>
+  <div class="tab" onclick="show('funding')" id="t-funding">💰 FUNDING</div>
+  <div class="tab" onclick="show('scanner')" id="t-scanner">🔍 SCANNER</div>
+  <div class="tab" onclick="show('defi')" id="t-defi">🌾 DeFi</div>
+  <div class="tab" onclick="show('trades')" id="t-trades">📋 TRADES</div>
+</div>
+<div class="main">
+
+  <!-- POSITIONS -->
+  <div class="screen active" id="s-positions">
+    <div class="header-bar">
+      <div class="hs"><div class="hs-label">TOTAL P&L</div><div class="hs-val" id="hTotalPnl">$0.00</div></div>
+      <div class="hs"><div class="hs-label">OPEN P&L</div><div class="hs-val cyan" id="hOpenPnl">$0.00</div></div>
+      <div class="hs"><div class="hs-label">WIN RATE</div><div class="hs-val gold" id="hWinRate">—%</div></div>
+      <div class="hs"><div class="hs-label">HEAT</div><div class="hs-val" id="hHeat">0%</div></div>
+    </div>
+    <div class="section-h"><span class="section-icon">💼</span><div class="section-title">ACTIVE POSITIONS</div><div class="section-badge" id="posCount">0</div></div>
+    <div id="positionsList"><div class="empty"><div class="empty-icon">₿</div>No positions open.<br>TITAN CRYPTO scanning 24/7.</div></div>
+    <div class="action-grid" style="margin-top:10px;">
+      <button class="btn" onclick="triggerScan()">🔍 Force Scan</button>
+      <button class="btn" onclick="show('market')">😱 Fear & Greed</button>
+    </div>
+    <div class="section-h" style="margin-top:4px;"><span class="section-icon">🔄</span><div class="section-title">ROTATION LOG</div></div>
+    <div id="rotationList"><div class="empty">Log builds as trades fire.</div></div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="screen" id="s-market">
+    <div class="fg-card" id="fgCard"><div class="loading"></div></div>
+    <div class="section-h"><span class="section-icon">📊</span><div class="section-title">MARKET STRUCTURE</div></div>
+    <div class="market-card" id="marketStructure"><div class="loading"></div></div>
+  </div>
+
+  <!-- 6-AI PIPELINE -->
+  <div class="screen" id="s-pipeline">
+    <div class="section-h"><span class="section-icon">🔱</span><div class="section-title">6-AI CRYPTO PIPELINE</div></div>
+    <div style="font-size:11px;color:var(--ghost);margin-bottom:10px;line-height:1.5;">Crypto-specific pipeline. AI2 is the Funding Rate Specialist — the primary signal engine. AI4 analyzes On-Chain & Market Structure. AI5 Devil's Advocate hunts whale manipulation and fake pumps.</div>
+    <div id="pipelineCards"><div class="empty"><div class="empty-icon">⚖️</div>Pipeline fires when analyzing a candidate.</div></div>
+  </div>
+
+  <!-- FUNDING RATES -->
+  <div class="screen" id="s-funding">
+    <div class="section-h"><span class="section-icon">💰</span><div class="section-title">FUNDING RATES</div><div class="section-badge">PRIMARY SIGNAL</div></div>
+    <div style="font-size:11px;color:var(--ghost);margin-bottom:10px;line-height:1.5;">Funding rates are TITAN CRYPTO's primary edge. Extreme positive = longs overextended. Extreme negative = short squeeze incoming.</div>
+    <div class="funding-grid" id="fundingGrid"><div class="loading" style="grid-column:span 2"></div></div>
+  </div>
+
+  <!-- SCANNER -->
+  <div class="screen" id="s-scanner">
+    <div class="section-h"><span class="section-icon">🔍</span><div class="section-title">SCAN CANDIDATES</div><div class="section-badge" id="candCount">0</div></div>
+    <div id="candidatesList"><div class="empty"><div class="empty-icon">📡</div>Candidates appear as scanner fires.<br>Funding + Fear&Greed + Price Action combined.</div></div>
+  </div>
+
+  <!-- DEFI -->
+  <div class="screen" id="s-defi">
+    <div class="section-h"><span class="section-icon">🌾</span><div class="section-title">DeFi YIELD OPPORTUNITIES</div></div>
+    <div style="font-size:11px;color:var(--ghost);margin-bottom:10px;line-height:1.5;">In extreme fear markets when no good trades exist, TITAN CRYPTO monitors DeFi yield opportunities for idle capital. Only protocols with $50M+ TVL.</div>
+    <div id="defiList"><div class="loading"></div></div>
+  </div>
+
+  <!-- TRADES -->
+  <div class="screen" id="s-trades">
+    <div class="section-h"><span class="section-icon">📋</span><div class="section-title">TRADE JOURNAL</div><div class="section-badge" id="tradeCount">0</div></div>
+    <div id="tradesList"><div class="empty"><div class="empty-icon">📊</div>Trade history builds after closing positions.</div></div>
+  </div>
+
+</div>
+<script>
+let ws, snap = {};
+const WS = location.protocol==='https:'?`wss://${location.host}`:`ws://${location.host}`;
+setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});},1000);
+
+function show(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`t-${tab}`).classList.add('active');
+  document.getElementById(`s-${tab}`).classList.add('active');
+}
+
+function fmt(v){const n=parseFloat(v)||0;return (n>=0?'+':'')+'$'+Math.abs(n).toFixed(4);}
+function fmtShort(v){const n=parseFloat(v)||0;return (n>=0?'+':'')+'$'+Math.abs(n).toFixed(2);}
+function pClass(v){return parseFloat(v)>0?'pos':parseFloat(v)<0?'neg':'';}
+function heatColor(h){return h>=0.8?'#ff3b5c':h>=0.5?'#f5c842':'#00ff9d';}
+function timeAgo(iso){if(!iso)return '—';const d=Date.now()-new Date(iso).getTime();if(d<60000)return Math.floor(d/1000)+'s ago';if(d<3600000)return Math.floor(d/60000)+'m ago';return Math.floor(d/3600000)+'h ago';}
+
+function getFGColor(index) {
+  if(index<=20) return '#ff3b5c';
+  if(index<=40) return '#f97316';
+  if(index<=60) return '#f5c842';
+  if(index<=80) return '#00d4ff';
+  return '#00ff9d';
+}
+
+function renderAll(data) {
+  snap = data;
+  renderHeader(data);
+  renderPositions(data.positions||{});
+  renderMarket(data);
+  renderPipeline(data);
+  renderFunding(data.fundingRates||{});
+  renderCandidates(data.candidates||[]);
+  renderDefi(data.defiYields||{});
+  renderTrades(data.tradeJournal||[]);
+  renderRotation(data.rotationLog||[]);
+
+  // Update nav F&G pill
+  const fgPill = document.getElementById('fgPill');
+  const color = getFGColor(data.fearGreedIndex||50);
+  fgPill.textContent = `F&G ${data.fearGreedIndex||'—'}`;
+  fgPill.style.background = `${color}20`;
+  fgPill.style.color = color;
+  fgPill.style.border = `1px solid ${color}40`;
+}
+
+function renderHeader(data) {
+  const tp = data.totalPnl||0, op = data.openPnl||0, wr = data.winRate||0, h = data.portfolioHeat||0;
+  document.getElementById('hTotalPnl').textContent = fmtShort(tp);
+  document.getElementById('hTotalPnl').className = `hs-val ${pClass(tp)}`;
+  document.getElementById('hOpenPnl').textContent = fmtShort(op);
+  document.getElementById('hOpenPnl').className = `hs-val ${pClass(op)||'cyan'}`;
+  document.getElementById('hWinRate').textContent = data.totalTrades>0?wr.toFixed(1)+'%':'—%';
+  document.getElementById('hHeat').textContent = (h*100).toFixed(0)+'%';
+  document.getElementById('hHeat').className = `hs-val ${h>=0.8?'neg':h>=0.5?'gold':'pos'}`;
+}
+
+function renderPositions(positions) {
+  const entries = Object.entries(positions);
+  document.getElementById('posCount').textContent = entries.length;
+  const el = document.getElementById('positionsList');
+  if(!entries.length){el.innerHTML='<div class="empty"><div class="empty-icon">₿</div>No positions open.<br>TITAN CRYPTO scanning 24/7.</div>';return;}
+  el.innerHTML = entries.map(([sym,pos])=>{
+    const isShort = pos.type==='SHORT';
+    const pnl = pos.unrealizedPnl||0;
+    const heat = pos.entry>0?(pos.entry*pos.qty)/10000:0;
+    const stages = Array(pos.maxStages||3).fill(0).map((_,i)=>`<div class="stage-dot ${i<(pos.stage||1)?'filled':''}"></div>`).join('');
+    return `<div class="pos-card ${isShort?'short':'long'}">
+      <div class="pos-header">
+        <div class="pos-ticker ${isShort?'short':'long'}">${sym}</div>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <span class="pos-type ${pos.type}">${pos.type}</span>
+          <span style="font-family:var(--fm);font-size:10px;color:${pnl>=0?'#00ff9d':'#ff3b5c'}">${fmt(pnl)}</span>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--silver);padding:4px 8px;background:rgba(0,0,0,.3);border-radius:4px;margin-bottom:6px;">${pos.signalType||''} | F&G at entry: ${pos.fearGreed||'—'} | Funding: ${pos.fundingAtEntry?.toFixed(4)||'0'}%</div>
+      <div class="stage-dots">${stages}<span style="font-size:9px;color:var(--ghost);margin-left:4px;font-family:var(--fm);">Stage ${pos.stage||1}/${pos.maxStages||3}</span></div>
+      <div class="pos-grid">
+        <div class="ps"><div class="ps-label">ENTRY</div><div class="ps-val">$${pos.entry?.toFixed(4)}</div></div>
+        <div class="ps"><div class="ps-label">STOP</div><div class="ps-val" style="color:var(--red)">$${pos.stop?.toFixed(4)}</div></div>
+        <div class="ps"><div class="ps-label">TARGET</div><div class="ps-val" style="color:var(--green)">$${pos.target?.toFixed(4)}</div></div>
+        <div class="ps"><div class="ps-label">QTY</div><div class="ps-val">${pos.qty}</div></div>
+      </div>
+      <div class="heat-bar"><div class="heat-fill" style="width:${Math.min(heat*100,100)}%;background:${heatColor(heat)}"></div></div>
+      <div class="pos-actions">
+        <button class="btn-close" onclick="closePos('${sym.replace('/','_')}')">✕ Close</button>
+        <span style="font-size:10px;color:var(--ghost);font-family:var(--fm);margin-left:6px;">${timeAgo(pos.entryTime)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMarket(data) {
+  const fg = data.fearGreedIndex||50;
+  const label = data.fearGreedLabel||'NEUTRAL';
+  const color = getFGColor(fg);
+  const el = document.getElementById('fgCard');
+  el.innerHTML = `
+    <div class="fg-header">
+      <div>
+        <div class="fg-title">😱 FEAR & GREED INDEX</div>
+        <div class="fg-label" style="color:${color}">${label}</div>
+      </div>
+      <div class="fg-index" style="color:${color}">${fg}</div>
+    </div>
+    <div class="fg-bar-wrap"><div class="fg-bar" style="width:${fg}%;background:linear-gradient(90deg,#ff3b5c,#f97316,#f5c842,#00d4ff,#00ff9d)"></div></div>
+    <div class="fg-zones"><span>EXTREME FEAR</span><span>FEAR</span><span>NEUTRAL</span><span>GREED</span><span>EXTREME GREED</span></div>
+    <div style="margin-top:10px;font-size:11px;color:var(--silver);line-height:1.5;">
+      ${fg<=20?'🚨 EXTREME FEAR — Capitulation zone. Historically best buy signal. TITAN CRYPTO hunting high-conviction longs.':
+        fg<=40?'⚠️ FEAR — Selective long mode. High conviction only. Monitor for capitulation signals.':
+        fg<=60?'⚖️ NEUTRAL — Follow price action and funding rates. No directional bias.':
+        fg<=80?'📈 GREED — Momentum riding mode. Trend is your friend but manage exits tightly.':
+        '🔴 EXTREME GREED — Distribution zone. Looking for exhaustion plays. Shorts on overextended alts.'}
+    </div>`;
+
+  const ms = document.getElementById('marketStructure');
+  const altSeason = data.btcDominance < 40 ? 'ACTIVE 🚀' : data.btcDominance < 45 ? 'FORMING' : data.btcDominance > 55 ? 'INACTIVE (BTC dominant)' : 'NEUTRAL';
+  ms.innerHTML = `
+    <div class="market-row"><div class="market-label">₿ BTC Price</div><div class="market-value" style="color:var(--gold)">$${(data.btcPrice||0).toLocaleString()}</div></div>
+    <div class="market-row"><div class="market-label">Ξ ETH Price</div><div class="market-value" style="color:var(--cyan)">$${(data.ethPrice||0).toLocaleString()}</div></div>
+    <div class="market-row"><div class="market-label">BTC Dominance</div><div class="market-value" style="color:${data.btcDominance>55?'#f5c842':'var(--silver)'}">${data.btcDominance||'—'}%</div></div>
+    <div class="market-row"><div class="market-label">Altcoin Season</div><div class="market-value" style="color:${data.btcDominance<45?'#00ff9d':'var(--ghost)'}">${altSeason}</div></div>
+    <div class="market-row"><div class="market-label">Crypto Regime</div><div class="market-value" style="color:var(--cyan)">${data.cryptoRegime||'—'}</div></div>
+    <div class="market-row"><div class="market-label">Personality</div><div class="market-value" style="color:var(--purple)">${data.personality||'—'}</div></div>`;
+}
+
+function renderPipeline(data) {
+  const el = document.getElementById('pipelineCards');
+  const allDecs = [
+    {ai:'AI1 TECHNICAL', dec:Object.values(data.ai1Dec||{})[0]},
+    {ai:'AI2 FUNDING RATE', dec:Object.values(data.ai2Dec||{})[0]},
+    {ai:'AI3 RISK', dec:Object.values(data.ai3Dec||{})[0]},
+    {ai:'AI4 ON-CHAIN', dec:Object.values(data.ai4Dec||{})[0]},
+    {ai:'AI5 DEVIL', dec:Object.values(data.ai5Dec||{})[0]},
+    {ai:'AI6 JUDGE', dec:Object.values(data.ai6Dec||{})[0]},
+  ];
+  const activeSym = Object.keys(data.ai1Dec||{})[0];
+  if(!activeSym){el.innerHTML='<div class="empty"><div class="empty-icon">⚖️</div>Pipeline fires when analyzing candidates.<br>AI2 Funding Rate is the primary signal engine.</div>';return;}
+  el.innerHTML = `<div class="pipeline-card">
+    <div class="pipeline-title">🔱 PIPELINE: ${activeSym}</div>
+    ${allDecs.map(({ai,dec})=>`<div class="ai-row">
+      <div class="ai-name">${ai}</div>
+      ${dec?`<span class="ai-verdict ${dec.verdict}">${dec.verdict}</span><div class="ai-conf">${dec.confidence}%</div><div class="ai-reason">${(dec.reason||dec.finalReason||dec.primaryRisk||dec.fundingSignal||'').slice(0,80)}</div>`:'<span style="font-size:10px;color:var(--ghost);font-family:var(--fm)">waiting...</span>'}
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderFunding(rates) {
+  const el = document.getElementById('fundingGrid');
+  const entries = Object.entries(rates);
+  if(!entries.length){el.innerHTML='<div class="empty" style="grid-column:span 2"><div class="empty-icon">💰</div>Funding rates load on first scan.<br>Updates every 15 minutes from Binance.</div>';return;}
+  el.innerHTML = entries.slice(0,8).map(([coin,data])=>{
+    const rate = data.rate||0;
+    const isPositive = rate > 0;
+    const isExtreme = Math.abs(rate) > 0.02;
+    const color = isExtreme ? (isPositive ? '#ff3b5c' : '#00ff9d') : (isPositive ? '#f97316' : '#00d4ff');
+    const signal = isExtreme ? (isPositive ? '🔴 SHORT bias' : '🟢 LONG bias') : '⚪ neutral';
+    return `<div class="funding-card" style="border-color:${isExtreme?color+'40':'var(--border)'}">
+      <div class="funding-coin" style="color:${color}">${coin}</div>
+      <div class="funding-rate" style="color:${color}">${rate>=0?'+':''}${rate.toFixed(4)}%</div>
+      <div class="funding-signal" style="color:var(--ghost)">${signal}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCandidates(candidates) {
+  document.getElementById('candCount').textContent = candidates.length;
+  const el = document.getElementById('candidatesList');
+  if(!candidates.length){el.innerHTML='<div class="empty"><div class="empty-icon">📡</div>Scanner fires every 10 minutes 24/7.</div>';return;}
+  el.innerHTML = candidates.slice(0,8).map(c=>`<div class="cand-card">
+    <div class="cand-header">
+      <div class="cand-sym">${c.sym||c.ticker}</div>
+      <span class="cand-dir ${c.dir}">${c.dir}</span>
+      <span style="font-family:var(--fm);font-size:9px;color:var(--ghost);margin-left:auto">${c.signalType||''}</span>
+    </div>
+    <div style="font-size:11px;color:var(--silver);line-height:1.4">${(c.reason||'').slice(0,90)}</div>
+    <div class="score-bar"><div class="score-fill" style="width:${c.score||60}%"></div></div>
+  </div>`).join('');
+}
+
+function renderDefi(defi) {
+  const el = document.getElementById('defiList');
+  const pools = defi.pools||[];
+  if(!pools.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌾</div>DeFi yields load every 2 hours.<br>Active in extreme fear regimes when no trades exist.</div>';return;}
+  el.innerHTML = `<div style="font-size:10px;color:var(--ghost);font-family:var(--fm);margin-bottom:8px;">Last updated: ${defi.lastUpdated?new Date(defi.lastUpdated).toLocaleTimeString():'-'}</div>` +
+  pools.map(p=>`<div class="yield-card">
+    <div class="yield-proto">${p.protocol}</div>
+    <div class="yield-sym">${p.symbol} · ${p.chain}</div>
+    <div style="text-align:right">
+      <div class="yield-apy">${p.apy}%</div>
+      <div class="yield-tvl">$${(p.tvl/1e6).toFixed(0)}M TVL ${p.safe?'✅':''}</div>
+    </div>
+  </div>`).join('');
+}
+
+function renderTrades(trades) {
+  document.getElementById('tradeCount').textContent = trades.length;
+  const el = document.getElementById('tradesList');
+  if(!trades.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Trade history builds after closing.</div>';return;}
+  el.innerHTML = trades.slice(0,30).map(t=>`<div class="trade-row">
+    <div class="tr-sym" style="color:${t.type==='SHORT'?'var(--red)':'var(--green)'}">${t.symbol||t.ticker}</div>
+    <div class="tr-type" style="font-size:9px;font-family:var(--fm);color:${t.type==='SHORT'?'var(--red)':'var(--green)'}">${t.type}</div>
+    <div class="tr-pnl ${pClass(t.pnl)}">${fmtShort(t.pnl)}</div>
+    <div class="tr-sig">${(t.signalType||'').slice(0,15)}</div>
+    <div class="tr-time">${t.exitTime?new Date(t.exitTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):''}</div>
+  </div>`).join('');
+}
+
+function renderRotation(log) {
+  const el = document.getElementById('rotationList');
+  if(!log.length){el.innerHTML='<div class="empty">Rotation log builds as trades fire.</div>';return;}
+  el.innerHTML = log.slice(0,15).map(r=>`<div class="rotation-item">
+    <div class="ri-icon">${r.icon}</div>
+    <div class="ri-ticker">${r.ticker}</div>
+    <div class="ri-reason">${(r.reason||'').slice(0,60)}</div>
+    <div class="ri-time">${r.time}</div>
+  </div>`).join('');
+}
+
+async function triggerScan() {
+  await fetch('/api/scan',{method:'POST'});
+  setTimeout(()=>fetch('/api/snapshot').then(r=>r.json()).then(renderAll),3000);
+}
+
+async function closePos(sym) {
+  const cleanSym = sym.replace('_','/');
+  if(!confirm(`Close ${cleanSym}?`)) return;
+  await fetch(`/api/close/${sym}`,{method:'POST'});
+  setTimeout(()=>fetch('/api/snapshot').then(r=>r.json()).then(renderAll),1000);
+}
+
+function connect() {
+  ws = new WebSocket(WS);
+  ws.onopen = () => {
+    document.getElementById('pulseDot').style.background = '#f5c842';
+    fetch('/api/snapshot').then(r=>r.json()).then(renderAll);
+  };
+  ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    if(msg.type==='SNAPSHOT'||msg.type==='POSITIONS_UPDATE') renderAll(msg.data||snap);
+    else if(msg.type==='AI_UPDATE') fetch('/api/snapshot').then(r=>r.json()).then(d=>{show('pipeline');renderAll(d);});
+    else if(msg.type==='POSITION_OPENED'||msg.type==='POSITION_CLOSED') fetch('/api/snapshot').then(r=>r.json()).then(renderAll);
+    else if(msg.type==='CANDIDATES_UPDATE') fetch('/api/snapshot').then(r=>r.json()).then(renderAll);
+  };
+  ws.onclose = () => {
+    document.getElementById('pulseDot').style.background = '#ff3b5c';
+    setTimeout(connect,3000);
+  };
+}
+connect();
+</script>
+</body>
+</html>
